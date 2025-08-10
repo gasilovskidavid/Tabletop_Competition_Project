@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS Products (
+    ProductID INTEGER PRIMARY KEY AUTOINCREMENT,
+    N_Players VARCHAR, 
+    ProductName TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS Retailors (
+    RetailorID INTEGER PRIMARY KEY AUTOINCREMENT,
+    RetailorName TEXT NOT NULL UNIQUE
+); 
+
+CREATE TABLE IF NOT EXISTS PriceHistory (
+    PriceLogID INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProductID INTEGER,
+    RetailorID INTEGER,
+    ScrapeDate TEXT NOT NULL,
+    Review REAL,
+    Price REAL,
+	Stock TEXT,
+    FOREIGN KEY (ProductID) REFERENCES Products (ProductID),
+    FOREIGN KEY (RetailorID) REFERENCES Retailors (RetailorID)
+);
