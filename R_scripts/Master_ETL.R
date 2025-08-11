@@ -28,14 +28,15 @@ print(paste("ETL process started at:", Sys.time()))
 
 tryCatch({
     print("--- Running Playin scraper... ---")
-    source("R_Scripts/Playin.R")
+    source("R_scripts/playin.R")
     run_sql_processor()
 }, error = function(e) {print(paste("!!! ERROR during Playin scrape/process:", e$message))})
 
 tryCatch({
     print("--- Running Philibert scraper... ---")
-    source("R_Scripts/phil.R")
+    source("R_scripts/phil.R")
     run_sql_processor()
 }, error = function(e) {print(paste("!!! ERROR during Philibert scrape/process:", e$message))})
 
 print(paste("ETL process finished at:", Sys.time()))
+
