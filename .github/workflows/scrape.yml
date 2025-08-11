@@ -19,12 +19,12 @@ jobs:
         run: Rscript -e "install.packages(c('httr', 'rvest', 'dplyr', 'jsonlite', 'DBI', 'RSQLite'))"
 
       - name: Run the entire ETL process
-        run: Rscript Master_ETL.R
+        run: Rscript R_scripts/Master_ETL.R
 
       - name: Commit and push database changes
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add Data/your_database.db
+          git add DATA/Tabletop_data.db
           git commit -m "Automated weekly data update" || echo "No changes to commit"
           git push
