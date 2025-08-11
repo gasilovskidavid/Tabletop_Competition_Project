@@ -8,7 +8,7 @@ print(paste("ETL process started at:", Sys.time()))
 # --- Step 1: Run Scraper for Playin ---
 tryCatch({
   print("--- Running Playin scraper... ---")
-  source("R_scripts/playin.r") # Assumes your scraper is in an R_Scripts folder
+  source("R_scripts/playin.R")
   print("--- Playin scraper finished successfully. ---")
 }, error = function(e) {
   print(paste("!!! ERROR in Playin scraper:", e$message))
@@ -17,10 +17,11 @@ tryCatch({
 # --- Step 2: Run Scraper for Philibert ---
 tryCatch({
   print("--- Running Philibert scraper... ---")
-  source("R_scripts/phil.r")
+  source("R_scripts/phil.R")
   print("--- Philibert scraper finished successfully. ---")
 }, error = function(e) {
   print(paste("!!! ERROR in Philibert scraper:", e$message))
 })
+
 
 print(paste("ETL process finished at:", Sys.time()))
