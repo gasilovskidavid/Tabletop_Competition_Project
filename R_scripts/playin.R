@@ -107,7 +107,7 @@ final_df_playin <- final_df_playin %>% mutate(ScrapeDate = as.character(ScrapeDa
 
 # --- Database Interaction ---
 
-db_path <- 'C:/Users/gasil/Desktop/DATA/Tabletop_data.db'
+db_path <- 'DATA/Tabletop_data.db'
 
 ## Create a connection to the database
 con <- dbConnect(RSQLite::SQLite(), db_path)
