@@ -31,7 +31,7 @@ jobs:
             any::stringr
             
       - name: Install R packages
-        uses: r-lib/actions/install-packages@v2
+        run: Rscript -e "install.packages(c('httr', 'rvest', 'dplyr', 'jsonlite', 'DBI', 'RSQLite', 'stringr'))"
 
       - name: Run the entire ETL process
         run: Rscript R_scripts/Master_ETL.R
