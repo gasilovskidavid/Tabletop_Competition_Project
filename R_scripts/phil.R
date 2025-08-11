@@ -116,7 +116,7 @@ final_df_philibert <- final_df_philibert %>% mutate(ScrapeDate = as.character(Sc
 
 # --- Database Interaction ---
 
-db_path <- 'C:/Users/gasil/Desktop/DATA/Tabletop_data.db'
+db_path <- 'DATA/Tabletop_data.db'
 
 # Create a connection to the database
 con <- dbConnect(RSQLite::SQLite(), db_path)
