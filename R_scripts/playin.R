@@ -8,7 +8,7 @@ library(stringr)
 library(httr)
 
 # Scraping Play-in third 
-base_url <- "https://www.play-in.com/jeux_de_societe/recherche/8-jeux_experts"
+base_url <- "https://www.play-in.com/fr/categorie/8/jeux-experts"
 all_products_list <- list()
 user_agent_string <- "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
 
@@ -28,7 +28,8 @@ for (page_number in 1:26) {
   
   page_content <- read_html(response)
   
-  product_cards <- page_content %>% html_elements(xpath = '//*[@id="wrapper"]/div[1]/div[4]/div[2]/div[1]/div')
+  # New XPath for Product Cards
+  product_cards <- page_content %>% html_elements(xpath = '//li[contains(@class, "tile--type_catalogItem")]')
   
   if (length(product_cards) == 0) {
     print("No more products found. Stopping the scraper.")
@@ -37,13 +38,25 @@ for (page_number in 1:26) {
   
   for (card in product_cards) {
     # Scrape the data just like in the single-page example
-    name <- card %>% html_element(xpath = './div/div[2]/a/div[1]') %>% html_text2()
-    price_text <- card %>% html_element(xpath = './div/div[3]/div[1]/div') %>% html_text2()
-    reviews <- card %>% html_element(xpath = './div/div[2]/div[3]/div[2]') %>% html_attr("title")
-    num_players <- card %>% html_element(xpath = './div/div[2]/div[1]/a[1]/div/div/span') %>% html_text2()
+    name <- card %>% html_element(xpath = './/a[contains(@class, "link--visual_unstyled")]') %>% html_text2()
+    price_text <- card %>% html_element(xpath = './/span[contains(@class, "text--variant_price")]') %>% html_text2()
+    reviews <- card %>% html_element(xpath = './/p[contains(text(), "Rated")]') %>% html_text2()
+    num_players <- NA_character_ # Player count not visible in list view anymore
     
-    stock_check <- card %>% html_element(xpath = './div/div[3]/div[2]/div/form/div[2]')
-    stock <- ifelse(is.na(stock_check), "Out of Stock", "In Stock") 
+    # Stock logic
+    button_title <- card %>% html_element(xpath = './/button[contains(@class, "iconButton")]') %>% html_attr("title")
+
+    stock <- "Unknown"
+    if (!is.na(button_title)) {
+        if (grepl("Ajouter", button_title, fixed = TRUE)) {
+            stock <- "In Stock"
+        } else {
+            stock <- "Out of Stock"
+        }
+    } else {
+         # If no button, assume out of stock or error, but let's say Out of Stock to be safe
+         stock <- "Out of Stock"
+    }
 
     all_products_list[[length(all_products_list) + 1]] <- data.frame(
       ProductName = name,
