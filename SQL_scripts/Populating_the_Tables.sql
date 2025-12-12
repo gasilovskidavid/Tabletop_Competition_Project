@@ -4,9 +4,10 @@ FROM PriceHistory_flat f
 WHERE f.Retailor NOT IN (SELECT r.RetailorName FROM Retailors r);
 
 INSERT INTO Products (ProductName, N_Players)
-SELECT DISTINCT f.ProductName, f.N_Players
+SELECT ProductName, MAX(N_Players)
 FROM PriceHistory_flat f
-WHERE f.ProductName NOT IN (SELECT p.ProductName FROM Products p) AND f.ProductName IS NOT NULL;
+WHERE f.ProductName NOT IN (SELECT p.ProductName FROM Products p) AND f.ProductName IS NOT NULL
+GROUP BY ProductName;
 
 INSERT INTO PriceHistory (ScrapeDate, Price, Stock, Review, ProductID, RetailorID)
 SELECT
