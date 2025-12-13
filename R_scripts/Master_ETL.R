@@ -11,13 +11,36 @@ run_sql_processor <- function() {
   db_path <- "DATA/Tabletop_data.db"
   sql_file_path <- "SQL_scripts/Populating_the_Tables.sql"
   con <- dbConnect(RSQLite::SQLite(), db_path)
-  
+
   tryCatch({
-    sql_command <- paste(readLines(sql_file_path), collapse = "\n")
-    dbExecute(con, sql_command)
+    # Read the SQL file
+    sql_content <- paste(readLines(sql_file_path), collapse = "\n")
+
+    # Split the content into individual statements based on semicolons
+    statements <- strsplit(sql_content, ";")[[1]]
+
+    # Start a transaction
+    dbBegin(con)
+
+    for (stmt in statements) {
+      # Trim whitespace
+      trimmed_stmt <- trimws(stmt)
+
+      # Execute only if the statement is not empty
+      if (nchar(trimmed_stmt) > 0) {
+        dbExecute(con, trimmed_stmt)
+      }
+    }
+
+    # Commit the transaction if all statements succeed
+    dbCommit(con)
     print("--- SQL script executed successfully. ---")
+
   }, error = function(e) {
+    # Rollback changes if an error occurs
+    tryCatch({ dbRollback(con) }, error = function(e2) {})
     print(paste("!!! ERROR in SQL processing:", e$message))
+
   }, finally = {
     dbDisconnect(con)
     print("--- Database connection closed. ---")
@@ -39,4 +62,3 @@ tryCatch({
 }, error = function(e) {print(paste("!!! ERROR during Philibert scrape/process:", e$message))})
 
 print(paste("ETL process finished at:", Sys.time()))
-
