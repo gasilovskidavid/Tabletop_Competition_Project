@@ -4,13 +4,18 @@
 # =============================================================
 
 library(DBI)
-library(RSQLite)
+library(RPostgreSQL)
 
 run_sql_processor <- function() {
   print("--- Running SQL data processing... ---")
-  db_path <- "DATA/Tabletop_data.db"
   sql_file_path <- "SQL_scripts/Populating_the_Tables.sql"
-  con <- dbConnect(RSQLite::SQLite(), db_path)
+
+  con <- dbConnect(PostgreSQL(),
+                   host=Sys.getenv("DB_HOST"),
+                   port=Sys.getenv("DB_PORT"),
+                   dbname=Sys.getenv("DB_NAME"),
+                   user=Sys.getenv("DB_USER"),
+                   password=Sys.getenv("DB_PASS"))
 
   tryCatch({
     # Read the SQL file

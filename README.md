@@ -27,10 +27,36 @@ The project follows a modern ETL workflow:
 
 ---
 
+## Running with Docker
+
+This project is configured to run with Docker and Docker Compose.
+
+### Prerequisites
+
+* Docker
+* Docker Compose
+
+### Running the Application
+
+1. **Build and run the services:**
+   ```bash
+   docker-compose up --build
+   ```
+
+2. **Accessing the database:**
+   Once the services are running, you can connect to the PostgreSQL database using the following credentials:
+   - **Host:** `localhost`
+   - **Port:** `5432`
+   - **Database:** `tabletop`
+   - **User:** `user`
+   - **Password:** `password`
+
+---
+
 ## Tech Stack
 
 * **Data Scraping:** R (`rvest`, `httr`, `jsonlite`)
-* **Database:** SQLite
+* **Database:** PostgreSQL (with Docker)
 * **Data Transformation:** SQL
 * **Automation:** GitHub Actions
 * **Visualization:** Power BI

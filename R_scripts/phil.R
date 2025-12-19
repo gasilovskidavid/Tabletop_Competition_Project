@@ -1,8 +1,7 @@
 # Installing and deploying libraries
-install.packages(c("tidyverse", "DBI", "RSQLite", "rvest", "stringr"))
 library(dplyr)
 library(DBI)
-library(RSQLite)
+library(RPostgreSQL)
 library(rvest)
 library(stringr)
 library(httr)
@@ -116,10 +115,13 @@ final_df_philibert <- final_df_philibert %>% mutate(ScrapeDate = as.character(Sc
 
 # --- Database Interaction ---
 
-db_path <- 'DATA/Tabletop_data.db'
-
 # Create a connection to the database
-con <- dbConnect(RSQLite::SQLite(), db_path)
+con <- dbConnect(PostgreSQL(),
+                 host=Sys.getenv("DB_HOST"),
+                 port=Sys.getenv("DB_PORT"),
+                 dbname=Sys.getenv("DB_NAME"),
+                 user=Sys.getenv("DB_USER"),
+                 password=Sys.getenv("DB_PASS"))
 
 dbWriteTable(con, "PriceHistory_flat", final_df_philibert, append = TRUE)
 

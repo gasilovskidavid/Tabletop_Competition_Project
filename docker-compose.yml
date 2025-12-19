@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: db
+    environment:
+      POSTGRES_DB: tabletop
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./SQL_scripts/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  etl:
+    build: .
+    container_name: etl
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: tabletop
+      DB_USER: user
+      DB_PASS: password
+    command: >
+      bash -c "
+        # Wait for the database to be ready
+        until PGPASSWORD=$$DB_PASS psql -h $$DB_HOST -U $$DB_USER -d $$DB_NAME -c '\q'; do
+          >&2 echo 'Postgres is unavailable - sleeping'
+          sleep 1
+        done
+
+        >&2 echo 'Postgres is up - executing command'
+        Rscript R_scripts/phil.R && Rscript R_scripts/playin.R && Rscript R_scripts/Master_ETL.R
+      "
+
+volumes:
+  postgres_data:
