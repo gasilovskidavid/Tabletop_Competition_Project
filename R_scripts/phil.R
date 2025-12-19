@@ -1,7 +1,7 @@
 # Installing and deploying libraries
 library(dplyr)
 library(DBI)
-library(RPostgreSQL)
+library(RSQLite)
 library(rvest)
 library(stringr)
 library(httr)
@@ -116,12 +116,7 @@ final_df_philibert <- final_df_philibert %>% mutate(ScrapeDate = as.character(Sc
 # --- Database Interaction ---
 
 # Create a connection to the database
-con <- dbConnect(PostgreSQL(),
-                 host=Sys.getenv("DB_HOST"),
-                 port=Sys.getenv("DB_PORT"),
-                 dbname=Sys.getenv("DB_NAME"),
-                 user=Sys.getenv("DB_USER"),
-                 password=Sys.getenv("DB_PASS"))
+con <- dbConnect(SQLite(), "DATA/Tabletop_data.db")
 
 dbWriteTable(con, "PriceHistory_flat", final_df_philibert, append = TRUE)
 
