@@ -133,7 +133,7 @@ source("R_scripts/db_connect.R")
 ## Create a connection to the database
 con <- get_db_connection()
 
-dbWriteTable(con, "PriceHistory_flat", final_df_playin, append = TRUE)
+dbWriteTable(con, "pricehistory_flat", final_df_playin, append = TRUE)
 
 dbDisconnect(con)
 
