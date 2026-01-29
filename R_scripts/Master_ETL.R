@@ -23,6 +23,14 @@ run_sql_processor <- function() {
       sql_file_path <- "SQL_scripts/Populating_the_Tables.sql"
     }
 
+    # Debug: Check if flat table has data
+    if (dbExistsTable(con, "pricehistory_flat")) {
+      count <- dbGetQuery(con, "SELECT COUNT(*) as n FROM pricehistory_flat")
+      print(paste("--- Rows in pricehistory_flat before processing:", count$n))
+    } else {
+      print("--- WARNING: pricehistory_flat table does not exist!")
+    }
+
     # Read the SQL file
     sql_content <- paste(readLines(sql_file_path), collapse = "\n")
 
@@ -38,6 +46,7 @@ run_sql_processor <- function() {
 
       # Execute only if the statement is not empty
       if (nchar(trimmed_stmt) > 0) {
+        print(paste("Executing SQL:", substr(trimmed_stmt, 1, 50), "..."))
         dbExecute(con, trimmed_stmt)
       }
     }
@@ -45,6 +54,10 @@ run_sql_processor <- function() {
     # Commit the transaction if all statements succeed
     dbCommit(con)
     print("--- SQL script executed successfully. ---")
+
+    # Debug: Check final row count
+    final_count <- dbGetQuery(con, "SELECT COUNT(*) as n FROM PriceHistory")
+    print(paste("--- Total rows in PriceHistory after processing:", final_count$n))
   }, error = function(e) {
     # Rollback changes if an error occurs
     tryCatch(
