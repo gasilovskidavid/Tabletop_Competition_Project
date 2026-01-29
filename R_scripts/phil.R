@@ -131,6 +131,9 @@ source("R_scripts/db_connect.R")
 # Create a connection to the database
 con <- get_db_connection()
 
+# Ensure column names are lowercase for PostgreSQL compatibility
+colnames(final_df_philibert) <- tolower(colnames(final_df_philibert))
+
 dbWriteTable(con, "pricehistory_flat", final_df_philibert, append = TRUE)
 
 dbDisconnect(con)

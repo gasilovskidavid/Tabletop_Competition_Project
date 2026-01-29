@@ -133,7 +133,11 @@ source("R_scripts/db_connect.R")
 ## Create a connection to the database
 con <- get_db_connection()
 
-dbWriteTable(con, "pricehistory_flat", final_df_playin, append = TRUE)
+# Ensure column names are lowercase for PostgreSQL compatibility
+colnames(final_df_playin) <- tolower(colnames(final_df_playin))
+
+# First scraper runs with overwrite = TRUE to ensure fresh staging table
+dbWriteTable(con, "pricehistory_flat", final_df_playin, overwrite = TRUE)
 
 dbDisconnect(con)
 

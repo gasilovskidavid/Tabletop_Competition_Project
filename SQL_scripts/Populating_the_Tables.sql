@@ -1,33 +1,33 @@
-INSERT INTO Retailors (RetailorName)
-SELECT DISTINCT f.Retailor
+INSERT INTO retailors (retailorname)
+SELECT DISTINCT f.retailor
 FROM pricehistory_flat f
-WHERE f.Retailor NOT IN (SELECT r.RetailorName FROM Retailors r);
+WHERE f.retailor NOT IN (SELECT r.retailorname FROM retailors r);
 
-INSERT INTO Products (ProductName, N_Players)
-SELECT ProductName, MAX(N_Players)
+INSERT INTO products (productname, n_players)
+SELECT productname, MAX(n_players)
 FROM pricehistory_flat f
-WHERE f.ProductName NOT IN (SELECT p.ProductName FROM Products p) AND f.ProductName IS NOT NULL
-GROUP BY ProductName;
+WHERE f.productname NOT IN (SELECT p.productname FROM products p) AND f.productname IS NOT NULL
+GROUP BY productname;
 
-INSERT INTO PriceHistory (ScrapeDate, Price, Stock, Review, ProductID, RetailorID)
+INSERT INTO pricehistory (scrapedate, price, stock, review, productid, retailorid)
 SELECT
-    CAST(f.ScrapeDate AS DATE),
-    f.Price,
-	f.Stock,
-    f.Reviews as Review,
-    p.ProductID, 
-    r.RetailorID
+    CAST(f.scrapedate AS DATE),
+    f.price,
+    f.stock,
+    f.reviews as review,
+    p.productid, 
+    r.retailorid
 FROM
     pricehistory_flat f
 JOIN
-    Products p ON f.ProductName = p.ProductName  
+    products p ON f.productname = p.productname  
 JOIN
-    Retailors r ON f.Retailor = r.RetailorName
+    retailors r ON f.retailor = r.retailorname
 WHERE NOT EXISTS (
-    SELECT 1 FROM PriceHistory ph
-    WHERE ph.ScrapeDate = CAST(f.ScrapeDate AS DATE)
-      AND ph.ProductID = p.ProductID
-      AND ph.RetailorID = r.RetailorID
+    SELECT 1 FROM pricehistory ph
+    WHERE ph.scrapedate = CAST(f.scrapedate AS DATE)
+      AND ph.productid = p.productid
+      AND ph.retailorid = r.retailorid
 );
 	
 DELETE FROM pricehistory_flat;
