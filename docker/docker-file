@@ -6,14 +6,14 @@ services:
     container_name: mysql_server
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword # Change this!
-      MYSQL_DATABASE: analytics         # The target DB name
+      MYSQL_ROOT_PASSWORD: 4210132b
+      MYSQL_DATABASE: analytics         
       MYSQL_USER: d.gasilovskii
-      MYSQL_PASSWORD: dbt_password      # Change this!
+      MYSQL_PASSWORD: 421b       
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data: /var/lib/mysql
 
 volumes:
   mysql_data:

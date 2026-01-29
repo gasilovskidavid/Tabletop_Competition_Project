@@ -3,16 +3,26 @@
 # This script controls the entire data pipeline.
 # =============================================================
 
-library(DBI)
-library(RSQLite)
+source("R_scripts/db_connect.R")
 
 run_sql_processor <- function() {
   print("--- Running SQL data processing... ---")
-  db_path <- "DATA/Tabletop_data.db"
-  sql_file_path <- "SQL_scripts/Populating_the_Tables.sql"
-  con <- dbConnect(RSQLite::SQLite(), db_path)
+
+  # Connect using the helper function
+  con <- get_db_connection()
 
   tryCatch({
+    # Determine which SQL file to run based on the backend
+    if (inherits(con, "PqConnection")) {
+      # Postgres logic might handle inserts differently or could reuse the same logic if compatible.
+      # For now, let's assume the Populating_the_Tables.sql is generic enough or we might need a variant.
+      # Looking at Populating_the_Tables.sql, it uses standard INSERT INTO ... SELECT logic.
+      # However, SQLite and Postgres syntax are mostly compatible for simple SQL.
+      sql_file_path <- "SQL_scripts/Populating_the_Tables.sql"
+    } else {
+      sql_file_path <- "SQL_scripts/Populating_the_Tables.sql"
+    }
+
     # Read the SQL file
     sql_content <- paste(readLines(sql_file_path), collapse = "\n")
 
@@ -35,12 +45,15 @@ run_sql_processor <- function() {
     # Commit the transaction if all statements succeed
     dbCommit(con)
     print("--- SQL script executed successfully. ---")
-
   }, error = function(e) {
     # Rollback changes if an error occurs
-    tryCatch({ dbRollback(con) }, error = function(e2) {})
+    tryCatch(
+      {
+        dbRollback(con)
+      },
+      error = function(e2) {}
+    )
     print(paste("!!! ERROR in SQL processing:", e$message))
-
   }, finally = {
     dbDisconnect(con)
     print("--- Database connection closed. ---")
@@ -49,16 +62,26 @@ run_sql_processor <- function() {
 
 print(paste("ETL process started at:", Sys.time()))
 
-tryCatch({
+tryCatch(
+  {
     print("--- Running Playin scraper... ---")
     source("R_scripts/playin.R")
     run_sql_processor()
-}, error = function(e) {print(paste("!!! ERROR during Playin scrape/process:", e$message))})
+  },
+  error = function(e) {
+    print(paste("!!! ERROR during Playin scrape/process:", e$message))
+  }
+)
 
-tryCatch({
+tryCatch(
+  {
     print("--- Running Philibert scraper... ---")
     source("R_scripts/phil.R")
     run_sql_processor()
-}, error = function(e) {print(paste("!!! ERROR during Philibert scrape/process:", e$message))})
+  },
+  error = function(e) {
+    print(paste("!!! ERROR during Philibert scrape/process:", e$message))
+  }
+)
 
 print(paste("ETL process finished at:", Sys.time()))
