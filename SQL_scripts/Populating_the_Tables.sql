@@ -22,6 +22,12 @@ FROM
 JOIN
     Products p ON f.ProductName = p.ProductName  
 JOIN
-    Retailors r ON f.Retailor = r.RetailorName;
+    Retailors r ON f.Retailor = r.RetailorName
+WHERE NOT EXISTS (
+    SELECT 1 FROM PriceHistory ph
+    WHERE ph.ScrapeDate = f.ScrapeDate
+      AND ph.ProductID = p.ProductID
+      AND ph.RetailorID = r.RetailorID
+);
 	
 DELETE FROM PriceHistory_flat;

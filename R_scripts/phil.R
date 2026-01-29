@@ -1,5 +1,6 @@
 # Installing and deploying libraries
-install.packages(c("tidyverse", "DBI", "RSQLite", "rvest", "stringr"))
+# Installing and deploying libraries
+# install.packages(c("tidyverse", "DBI", "RSQLite", "rvest", "stringr")) # Removed: Handled by environment
 library(dplyr)
 library(DBI)
 library(RSQLite)
